@@ -10,6 +10,10 @@ module.exports = {
       "__testing",
       "sensors",
       "getAllTemperatures"
+    ],
+    "provides": [
+      "getAllTemperatures",
+      "sensors"
     ]
   },
   "global": async function (ctx) {
@@ -25,6 +29,14 @@ module.exports = {
         ], async function (ctx, args) {
           ctx.scope.set("eci", args["eci"]);
           ctx.scope.set("sensor_id", args["sensor_id"]);
+          ctx.scope.set("eci", await ctx.applyFn(ctx.scope.get("head"), ctx, [await ctx.applyFn(ctx.scope.get("klog"), ctx, [
+              ctx.scope.get("eci"),
+              "eci"
+            ])]));
+          ctx.scope.set("sensor_id", await ctx.applyFn(ctx.scope.get("head"), ctx, [await ctx.applyFn(ctx.scope.get("klog"), ctx, [
+              ctx.scope.get("sensor_id"),
+              "sensor_id"
+            ])]));
           return await ctx.applyFn(await ctx.modules.get(ctx, "wrangler", "skyQuery"), ctx, [
             ctx.scope.get("eci"),
             "temperature_store",
@@ -50,6 +62,10 @@ module.exports = {
       return await ctx.modules.get(ctx, "ent", "sensors");
     }));
     ctx.scope.set("__testing", {
+      "queries": [{
+          "name": "getAllTemperatures",
+          "args": []
+        }],
       "events": [
         {
           "domain": "sensor",

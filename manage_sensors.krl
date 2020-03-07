@@ -3,6 +3,7 @@ ruleset manage_sensors {
 	meta {
 		use module io.picolabs.wrangler alias wrangler
 		shares __testing, sensors, getAllTemperatures
+		provides getAllTemperatures, sensors
 	}
 
 	global {
@@ -12,7 +13,9 @@ ruleset manage_sensors {
 
 		getAllTemperatures = function() {
 			ent:sensors.map(function(eci, sensor_id) {
-				wrangler:skyQuery(eci, "temperature_store", {})
+				eci = eci.klog("getAllTemperatures eci").head()
+				sensor_id = sensor_id.klog("sensor_id").head()
+				wrangler:skyQuery(eci, "temperature_store", "temperatures", {})
 			})
 		}
 
@@ -28,7 +31,10 @@ ruleset manage_sensors {
 			ent:sensors
 		}
 
-		__testing = { "events": [ 
+		__testing = { 	"queries": [
+							{"name": "getAllTemperatures", "args": []}
+						],
+						"events": [ 
 									{ "domain": "sensor", "type": "new_sensor", "attrs": [ "sensor_id" ] }, 
 									{ "domain": "sensor", "type": "unneeded_sensor", "attrs": ["sensor_id"] } 
 								] 
@@ -59,7 +65,7 @@ ruleset manage_sensors {
 		pre {
 			sensor_id = event:attr("sensor_id")
 			exists = ent:sensors >< sensor_id
-			eci = event:attr("eci").klog("eci").head()
+			eci = event:attr("eci").klog("SETTING ECI")
 		}
 
 		if exists then

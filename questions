@@ -6,7 +6,7 @@ Questions
 
 1. I added the rule ids to the child creation wrangler event.
 2. I waited for the child_initialized event to be raised by wrangler.
-3. 
+3. I used python to create a single threaded script of API calls.
 4. Upon creating a new pico I could send it all of the previously created eci's and have the new pico (or parent pico) raise an event to each eci to have it added to its peers.
 
 Diagram
